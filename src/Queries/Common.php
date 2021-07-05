@@ -42,7 +42,8 @@ abstract class Common extends Base
         'order',
         'orderBy',
         'outerJoin',
-        'rightJoin'
+        'rightJoin',
+        'union'
     ];
 
     /** @var array - Query tables (also include table from clause FROM) */
@@ -503,5 +504,33 @@ abstract class Common extends Base
 
         return $joinItem;
     }
+
+
+    /**
+     * create union string
+     *
+     * @param string $clause
+     * @param string $unionTable
+     * @param ?string $selectColumns
+     * @return string
+     */
+    public function createUnionStatement(string $clause = 'UNION', string $unionTable, ?string $selectColumns = ' * ')
+    {
+        if (is_array($selectColumns)) {
+            $selectColumns = implode(' ,', $selectColumns);
+        }
+        return "SELECT $selectColumns FROM $unionTable ";
+    }
+
+    /**
+     * @param $unionTable
+     * @return $this
+     */
+    public function union($unionTable)
+    {
+        $unionStatement = $this->createUnionStatement('UNION', $unionTable, '*');
+        return $this->addUnionStatement($unionStatement);
+    }
+
 
 }
