@@ -229,6 +229,15 @@ abstract class Common extends Base
         return $query;
     }
 
+    protected function getClauseUnion() {
+        $query = '';
+        foreach ($this->statements['UNION'] as $statement) {
+            $query .= " UNION " . $statement;
+        }
+
+        return $query;
+    }
+
     /**
      * Statement can contain more tables (e.g. "table1.table2:table3:")
      *
@@ -514,23 +523,22 @@ abstract class Common extends Base
      * @param ?string $selectColumns
      * @return string
      */
-    public function createUnionStatement(string $clause = 'UNION', string $unionTable, ?string $selectColumns = ' * ')
+    public function createUnionStatement(string $unionTable, string $selectColumns = ' * '): string
     {
         if (is_array($selectColumns)) {
             $selectColumns = implode(' ,', $selectColumns);
         }
-        return "SELECT $selectColumns FROM $unionTable ";
+        return "SELECT " . $selectColumns . " FROM " . $unionTable . " ";
     }
 
     /**
-     * @param $unionTable
+     * @param string $unionTable
+     * @param ?string $selectedColumns
      * @return $this
      */
-    public function union($unionTable)
+    public function union(string $unionTable, string $selectedColumns = ' * '): Common
     {
-        $unionStatement = $this->createUnionStatement('UNION', $unionTable, '*');
+        $unionStatement = $this->createUnionStatement($unionTable, $selectedColumns);
         return $this->addUnionStatement($unionStatement);
     }
-
-
 }
