@@ -95,6 +95,48 @@ foreach ($query as $row) {
 }
 ```
 
+### Unions
+
+To use unions on the select query, there are two distinct possibilities
+
+The first is to use the union function directly on the builder:
+```php
+$query = $fluent->from('table_1')
+            ->union('table_2')
+            ->union('table_3');
+```
+Which would return the following query:
+```mysql
+SELECT *
+FROM table_1
+UNION SELECT *
+FROM table_2
+UNION SELECT *
+FROM table_3
+```
+
+The other option is to use the unifiedTables function instead of the from function:
+```php
+$query = $fluent->unifiedTables(['table_1', 'table_2', 'table_3'], '_table')
+            ->orderBy('first_name ASC')
+            ->where('first_name LIKE "%test%"');
+```
+
+Which would return the following query:
+```mysql
+SELECT _table.*
+FROM (
+    SELECT *
+    FROM table_1
+    UNION SELECT *
+    FROM table_2
+    UNION SELECT *
+    FROM table_3
+    ) AS _table
+WHERE first_name LIKE '%test%'
+ORDER BY first_name ASC
+```
+
 ## Using the Smart Join Builder
 
 Let's start with a traditional join, below:

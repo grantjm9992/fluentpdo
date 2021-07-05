@@ -105,9 +105,7 @@ class Query
         }
         $tableString = substr($tableString, 0, strlen($tableString) - 5);
         $tableString .= ') as ' . $groupedTableAlias;
-        $query = new Select($this, $tableString);
-
-        return $query;
+        return new Select($this, $tableString);
     }
 
     /**
